@@ -80,7 +80,7 @@ def upload_file():
 
     # Only continue if a file that's allowed gets submitted.
     if file and allowed_file(file.filename):
-      filename = secure_filename(short_url.encode_url(str(randint(1000,8999)),5) + '.' + file.filename.rsplit('.',1)[1])
+      filename = secure_filename(short_url.encode_url(int(time.time()), 5) + '.' + file.filename.rsplit('.',1)[1])
       while os.path.exists(os.path.join(config["UPLOAD_FOLDER"], filename)):
         filename = str(randint(1000,8999)) + '-' + secure_filename(filename)
 
