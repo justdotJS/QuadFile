@@ -7,6 +7,7 @@ import os
 import random
 import json
 import time
+import short_url
 from random import randint
 
 # Import our configuration
@@ -79,7 +80,7 @@ def upload_file():
 
     # Only continue if a file that's allowed gets submitted.
     if file and allowed_file(file.filename):
-      filename = secure_filename(file.filename)
+      filename = secure_filename(short_url.encode_url(str(randint(1000,8999)),5))
       while os.path.exists(os.path.join(config["UPLOAD_FOLDER"], filename)):
         filename = str(randint(1000,8999)) + '-' + secure_filename(filename)
 
