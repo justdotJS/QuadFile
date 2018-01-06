@@ -66,8 +66,16 @@ def allowed_file(filename):
     if config["BLACKLIST"]:
       return '.' in filename and filename.rsplit('.', 1)[1] not in config["BANNED_EXTENSIONS"]      
     else:
-      return '.' in filename and filename.rsplit('.', 1)[1] in config["ALLOWED_EXTENSIONS"]
+      return '.' in filename and filename.rsplit('.', 1)[1] in config["ALLOWED_EXTENSIONS"]   
 
+#def donor_allowed_file(filename):
+#  if config["DONOR_ALLOW_ALL_FILES"]:
+#    return True
+#  else:
+#    if config["DONOR_BLACKLIST"]:
+#      return '.' in filename and filename.rsplit('.', 1)[1] not in config["DONOR_BANNED_EXTENSIONS"]      
+#    else:
+#      return '.' in filename and filename.rsplit('.', 1)[1] in config["DONOR_ALLOWED_EXTENSIONS"]
 
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
@@ -93,6 +101,44 @@ def upload_file():
       data["file"] = filename
       data["url"] = config["DOMAIN"] + "/" + filename
       print_log('Main', 'New file processed "' + filename + '"')
+
+      try:
+        if request.form["source"] == "web":
+          return render_template('link.html', data=data, page=config["SITE_DATA"])
+      except Exception:
+        return json.dumps(data)
+    else:
+      print_log('Notice', 'Forbidden file received')
+      return error_page(error="This file isn't allowed, sorry!", code=403)
+
+  # Return Web UI if we have a GET request
+  elif request.method == 'GET':
+    return render_template('upload.html', page=config["SITE_DATA"])
+  
+@app.route('/custom', methods=['GET', 'POST'])
+def donor_upload_file():
+  if request.method == 'POST':
+    print_log('Web', 'New premium file received')
+    if not application.basicauth(request.headers.get('X-Hyozan-Auth'), config["KEY"]):
+      abort(403)
+    data = dict()
+    file = request.files['file']
+
+    # Only continue if a file that's allowed gets submitted.
+    if file and allowed_file(file.filename):
+      filename = secure_filename(file.filename)
+      while os.path.exists(os.path.join(config["UPLOAD_FOLDER"], filename)):
+        filename = str(randint(1000,8999)) + '-' + secure_filename(filename)
+
+      thread1 = Thread(target = db.add_file, args = (filename,))
+      thread1.start()
+      print_log('Thread', 'Adding to DB')
+      file.save(os.path.join(config['UPLOAD_FOLDER'], filename))
+      thread1.join()
+
+      data["file"] = filename
+      data["url"] = config["DOMAIN"] + "/" + filename
+      print_log('Main', 'New premium file processed "' + filename + '"')
 
       try:
         if request.form["source"] == "web":
