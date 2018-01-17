@@ -51,11 +51,20 @@
         return _this5.addFile(file);
       });
     };
+    dropper.on("sending", function() {
+      document.getElementById("uploadText").innerHTML = "Uploading...";
+      var button = document.getElementById("uploadButton");
+      button.className = button.className + " uploading";
+    });
     dropper.on("success", function(file, resp) {
-        //alert('File Uploaded. URL: https://i.dis.gg/' + file.upload.filename + '\n' + JSON.stringify(twio))
-        //document.open();
-        //document.write(resp);
-        //document.close();
+        document.open();
+        document.write(resp);
+        document.close();
     });
   </script>
+  <style>
+    .dz-preview {
+      display:none!important
+    }
+  </style>
 {% endblock %}
