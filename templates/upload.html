@@ -51,9 +51,12 @@
         return _this5.addFile(file);
       });
     };
-    dropper.on("success", function(file, twio) {
+    dropper.on("success", function(file, resp) {
       if (file.status = 'success') {
-        alert('File Uploaded. URL: https://i.dis.gg/' + file.upload.filename + '\n' + JSON.stringify(twio))
+        //alert('File Uploaded. URL: https://i.dis.gg/' + file.upload.filename + '\n' + JSON.stringify(twio))
+        document.open();
+        document.write(resp);
+        document.close();
       }
     });
   </script>
