@@ -76,11 +76,11 @@
             ajaxData.append( $input.attr('name'), file );
           });
         }
-        $.ajax({
-          url: $form.attr('action'),
-          type: 'post',
-          data: ajaxData,
-          dataType: 'json'
+       // $.ajax({
+       //   url: $form.attr('action'),
+        //  type: 'post',
+        //  data: ajaxData,
+        //  dataType: 'json'
           //cache: false,
           //contentType: false,
           //processData: false,
@@ -94,7 +94,17 @@
           //error: function() {
           // Log the error, show an alert, whatever works for you
           //}
-        });
+       // });
+        $.ajax({
+          url: '/',
+          method: 'post',
+          data: ajaxData,
+          processData: false,
+          contentType: false,
+          success: function(response) {
+            alert('Files uploaded successfully.');
+          }
+       });
     });
     }
   </script>
