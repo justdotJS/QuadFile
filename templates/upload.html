@@ -45,6 +45,7 @@
       return (('draggable' in div) || ('ondragstart' in div && 'ondrop' in div)) && 'FormData' in window && 'FileReader' in window;
     }();
     var $form = $('.uploadForm')
+    var $button = $('.uploadButton')
     var $drag = $('.drag')
     var $input = $form.find('input[type="file"]')
     var $label = $form.find('label')
@@ -58,13 +59,16 @@
      .on('drop', function(e) {
        droppedFiles = e.originalEvent.dataTransfer.files;
        $form.trigger('submit');
-     });
-    }
-    
-    $form.on('submit', function(e) {
+     })
+     .on('dragover dragenter', function() {
+       $button.addClass('draggy');
+     })
+     .on('dragleave dragend drop', function() {
+       $button.removeClass('draggy');
+     })
+     .on('submit', function(e) {
       if ($form.hasClass('is-uploading')) return false;
       $form.addClass('is-uploading').removeClass('is-error');
-      if (isAdvancedUpload) {
         e.preventDefault();
         var ajaxData = new FormData($form.get(0));
         if (droppedFiles) {
@@ -91,9 +95,8 @@
           // Log the error, show an alert, whatever works for you
           }
         });
-      } else {
-      }
     });
+    }
   </script>
   <style>
     .drag {
@@ -101,6 +104,9 @@
     }
     .has-advanced-upload {
       display: inline!important
+    }
+    .draggy {
+      background-color:#ff8800
     }
   </style>
 {% endblock %}
