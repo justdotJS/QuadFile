@@ -3,10 +3,10 @@
   <h1 class="title">
     dis.gg files
   </h1><br>
-  <form action="" id="form" name="fileForm" method="post" enctype="multipart/form-data" class="uploadForm">
+  <form action="" id="form" name="fileForm" method="post" enctype="multipart/form-data" class="uploadForm dropzone">
     <div id="uploadButton" class="uploadButton">
       <p id="uploadText">
-        Choose <span class="drag"> (or Drop)</span>
+        Choose
       </p>
       
       <input id="file" type="file" name="file">
@@ -32,7 +32,7 @@
       <a href="/dmca">Abuse</a>
     </li>
   </ul>
-  <script   src="https://code.jquery.com/jquery-3.2.1.min.js"   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="   crossorigin="anonymous"></script>
+  <script src="/dropzone.js"></script>
   <script>
     document.getElementById("file").onchange = function() {
       document.getElementById("uploadText").innerHTML = "Uploading...";
@@ -40,83 +40,5 @@
       button.className = button.className + " uploading";
       document.getElementById("form").submit();
     };
-    var isAdvancedUpload = function() {
-      var div = document.createElement('div');
-      return (('draggable' in div) || ('ondragstart' in div && 'ondrop' in div)) && 'FormData' in window && 'FileReader' in window;
-    }();
-    var $form = $('.uploadForm')
-    var $button = $('.uploadButton')
-    var $drag = $('.drag')
-    var $input = $form.find('input[type="file"]')
-    var $label = $form.find('label')
-    if (isAdvancedUpload) {
-      $drag.addClass('has-advanced-upload');
-      var droppedFiles = false;
-      $form.on('drag dragstart dragend dragover dragenter dragleave drop', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-      })
-     .on('drop', function(e) {
-       droppedFiles = e.originalEvent.dataTransfer.files;
-       document.getElementById("form").submit();
-     })
-     .on('dragover dragenter', function() {
-       $button.addClass('draggy');
-     })
-     .on('dragleave dragend drop', function() {
-       $button.removeClass('draggy');
-     })
-     .on('submit', function(e) {
-      if ($form.hasClass('is-uploading')) return false;
-      $form.addClass('is-uploading').removeClass('is-error');
-        e.preventDefault();
-        var ajaxData = new FormData($form.get(0));
-        if (droppedFiles) {
-          $.each( droppedFiles, function(i, file) {
-            ajaxData.append( $input.attr('name'), file );
-          });
-        }
-       // $.ajax({
-       //   url: $form.attr('action'),
-        //  type: 'post',
-        //  data: ajaxData,
-        //  dataType: 'json'
-          //cache: false,
-          //contentType: false,
-          //processData: false,
-          //complete: function() {
-          //  $form.removeClass('is-uploading');
-         // },
-          //success: function(data) {
-          //  $form.addClass( data.success == true ? 'is-success' : 'is-error' );
-          //  if (!data.success) $errorMsg.text(data.error);
-          //},
-          //error: function() {
-          // Log the error, show an alert, whatever works for you
-          //}
-       // });
-        $.ajax({
-          url: '/',
-          method: 'post',
-          data: ajaxData,
-          processData: false,
-          contentType: false,
-          success: function(response) {
-            alert('Files uploaded successfully.');
-          }
-       });
-    });
-    }
   </script>
-  <style>
-    .drag {
-      display:none
-    }
-    .has-advanced-upload {
-      display: inline!important
-    }
-    .draggy {
-      background-color:#ff8800
-    }
-  </style>
 {% endblock %}
