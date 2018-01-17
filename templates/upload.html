@@ -40,7 +40,7 @@
       button.className = button.className + " uploading";
       document.getElementById("form").submit();
     };
-    var dropper = new Dropzone(".uploadForm", { url: document.location.href });
+    var dropper = new Dropzone(".uploadForm", { url: document.location.href, maxFiles: 1 });
     dropper.handleFiles = function(files) {
       var _this5 = this;
       var files_array = [];
