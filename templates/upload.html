@@ -6,7 +6,7 @@
   <form action="" id="form" name="fileForm" method="post" enctype="multipart/form-data" class="uploadForm">
     <div id="uploadButton" class="uploadButton">
       <p id="uploadText">
-        Choose <span class="drag" style="display:none"> (or Drop)</span>
+        Choose <span class="drag"> (or Drop)</span>
       </p>
       
       <input id="file" type="file" name="file">
@@ -44,11 +44,12 @@
       var div = document.createElement('div');
       return (('draggable' in div) || ('ondragstart' in div && 'ondrop' in div)) && 'FormData' in window && 'FileReader' in window;
     }();
+    var $form = $('.uploadForm')
+    var $drag = $('.drag')
+    var $input = $form.find('input[type="file"]')
+    var $label = $form.find('label')
     if (isAdvancedUpload) {
-      var $drag = $('.drag');
       $drag.addClass('has-advanced-upload');
-  
-      var $form = $('.uploadForm');
       var droppedFiles = false;
       $form.on('drag dragstart dragend dragover dragenter dragleave drop', function(e) {
         e.preventDefault();
@@ -95,8 +96,11 @@
     });
   </script>
   <style>
-    .drag .has-advanced-upload {
-      display: inline;
+    .drag {
+      display:none
+    }
+    .has-advanced-upload {
+      display: inline!important
     }
   </style>
 {% endblock %}
