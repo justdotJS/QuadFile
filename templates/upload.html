@@ -58,7 +58,7 @@
       })
      .on('drop', function(e) {
        droppedFiles = e.originalEvent.dataTransfer.files;
-       $form.trigger('submit');
+       document.getElementById("form").submit();
      })
      .on('dragover dragenter', function() {
        $button.addClass('draggy');
