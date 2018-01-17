@@ -6,7 +6,7 @@
   <form action="" id="form" name="fileForm" method="post" enctype="multipart/form-data" class="uploadForm">
     <div id="uploadButton" class="uploadButton">
       <p id="uploadText">
-        Choose
+        Choose <span class="dz-message"> or Drop</span>
       </p>
       
       <input id="file" type="file" name="file">
@@ -52,7 +52,9 @@
       });
     };
     dropper.on("success", function(file) {
-    alert(JSON.stringify(file))
+      if (file.status = 'success') {
+        alert(JSON.stringify(file))
+      }
     });
   </script>
 {% endblock %}
