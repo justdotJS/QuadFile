@@ -3,7 +3,7 @@
   <h1 class="title">
     dis.gg files
   </h1><br>
-  <form action="/" id="form" name="fileForm" method="post" enctype="multipart/form-data" class="uploadForm dropzone">
+  <form action="/" id="form" name="fileForm" method="post" enctype="multipart/form-data" class="uploadForm">
     <div id="uploadButton" class="uploadButton">
       <p id="uploadText">
         Choose
@@ -39,6 +39,17 @@
       var button = document.getElementById("uploadButton");
       button.className = button.className + " uploading";
       document.getElementById("form").submit();
+    };
+    var dropper = new Dropzone("form#uploadForm");
+    dropper.handleFiles = function(files) {
+      var _this5 = this;
+      var files_array = [];
+      for (var i = 0; i < files.length; i++) {
+        files_array.push(files[i]);
+      }
+      return files_array.map(function(file) {
+        return _this5.addFile(file);
+      });
     };
   </script>
 {% endblock %}
