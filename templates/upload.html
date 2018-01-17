@@ -6,8 +6,9 @@
   <form action="" id="form" name="fileForm" method="post" enctype="multipart/form-data" class="uploadForm">
     <div id="uploadButton" class="uploadButton">
       <p id="uploadText">
-        Upload
+        Choose <span class="drag" style="display:none"> (or Drop)</span>
       </p>
+      
       <input id="file" type="file" name="file">
     </div>
     <input type="hidden" name="source" value="web">
@@ -31,12 +32,71 @@
       <a href="/dmca">Abuse</a>
     </li>
   </ul>
+  <script   src="https://code.jquery.com/jquery-3.2.1.min.js"   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="   crossorigin="anonymous"></script>
   <script>
-  document.getElementById("file").onchange = function() {
-    document.getElementById("uploadText").innerHTML = "Uploading...";
-    var button = document.getElementById("uploadButton");
-    button.className = button.className + " uploading";
-    document.getElementById("form").submit();
-  };
+    document.getElementById("file").onchange = function() {
+      document.getElementById("uploadText").innerHTML = "Uploading...";
+      var button = document.getElementById("uploadButton");
+      button.className = button.className + " uploading";
+      document.getElementById("form").submit();
+    };
+    var isAdvancedUpload = function() {
+      var div = document.createElement('div');
+      return (('draggable' in div) || ('ondragstart' in div && 'ondrop' in div)) && 'FormData' in window && 'FileReader' in window;
+    }();
+    if (isAdvancedUpload) {
+      var $drag = $('.drag');
+      $drag.addClass('has-advanced-upload');
+  
+      var $form = $('.uploadForm');
+      var droppedFiles = false;
+      $form.on('drag dragstart dragend dragover dragenter dragleave drop', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      })
+     .on('drop', function(e) {
+       droppedFiles = e.originalEvent.dataTransfer.files;
+       $form.trigger('submit');
+     });
+    }
+    
+    $form.on('submit', function(e) {
+      if ($form.hasClass('is-uploading')) return false;
+      $form.addClass('is-uploading').removeClass('is-error');
+      if (isAdvancedUpload) {
+        e.preventDefault();
+        var ajaxData = new FormData($form.get(0));
+        if (droppedFiles) {
+          $.each( droppedFiles, function(i, file) {
+            ajaxData.append( $input.attr('name'), file );
+          });
+        }
+        $.ajax({
+          url: $form.attr('action'),
+          type: $form.attr('method'),
+          data: ajaxData,
+          dataType: 'json',
+          cache: false,
+          contentType: false,
+          processData: false,
+          complete: function() {
+            $form.removeClass('is-uploading');
+          },
+          success: function(data) {
+            $form.addClass( data.success == true ? 'is-success' : 'is-error' );
+            if (!data.success) $errorMsg.text(data.error);
+          },
+          error: function() {
+          // Log the error, show an alert, whatever works for you
+          }
+        });
+      } else {
+      }
+    });
   </script>
+  <style>
+    .drag .has-advanced-upload {
+      display: inline;
+    }
+  </style>
 {% endblock %}
