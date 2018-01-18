@@ -215,9 +215,9 @@ def callback():
         'name': userinfo['name']
     }
     
-    session[constants.PROFILE_ID] = userinfo['sub']
+    session[constants.PROFILE_KEY] = userinfo['sub']
     
-    return session[constants.PROFILE_ID]
+    return session[constants.PROFILE_KEY]
     #return redirect('/custom')
   
 @app.route('/logout')
