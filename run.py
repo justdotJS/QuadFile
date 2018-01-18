@@ -192,7 +192,9 @@ def login():
   
 @app.route('/callback')
 def callback():
-    return request.args.get('error')
+    if request.args.get('error'):
+        return error_page(error="Please donate to access this page.", code=403), 403
+    
     resp = auth0.authorized_response()
     
     if resp is None:
@@ -210,12 +212,12 @@ def callback():
         'name': userinfo['name']
     }
     
-    session[constants.PROFILE_KEY] = userinfo['sub'].split('|')[-1]
+    #session[constants.PROFILE_KEY] = userinfo['sub'].split('|')[-1]
     
-    if allowed_id(session[constants.PROFILE_KEY]):
-        return redirect('/custom')
-    else:
-        return error_page(error="Please donate to access this page.", code=403), 403
+    #if allowed_id(session[constants.PROFILE_KEY]):
+    return redirect('/custom')
+    #else:
+    #    return error_page(error="Please donate to access this page.", code=403), 403
   
 @app.route('/logout')
 def logout():
