@@ -89,11 +89,8 @@ def requires_auth(f):
   def decorated(*args, **kwargs):
     if constants.PROFILE_KEY not in session:
       return redirect('/login')
-    else:
-      if allowed_id(session[constants.PROFILE_KEY]):
-        # nothing, go on
-      else:
-        return error_page(error="Please donate to access this page.", code=403), 403
+    if notallowed_id(session[constants.PROFILE_KEY]):
+      return (error_page(error='Please donate to access this page.', code=403), 403
     return f(*args, **kwargs)
   return decorated
 
@@ -108,6 +105,9 @@ def allowed_file(filename):
 
 def allowed_id(id):  
   return id in config["DONOR_ID_LIST"]
+              
+def allowed_id(id):  
+  return id not in config["DONOR_ID_LIST"]
 
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
