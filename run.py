@@ -192,7 +192,7 @@ def login():
   
 @app.route('/callback')
 def callback():
-    return request.GET.get('error')
+    return request.args.get('error')
     resp = auth0.authorized_response()
     
     if resp is None:
