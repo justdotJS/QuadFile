@@ -85,15 +85,14 @@ def error_page(error, code):
   return render_template('error.html', page=config["SITE_DATA"], error=error, code=code)
 
 def requires_auth(f):
-  @wraps(f)
-  def decorated(*args, **kwargs):
-    if constants.PROFILE_KEY not in session:
-      return redirect('/login')
-    if notallowed_id(session[constants.PROFILE_KEY]):
-      return (error_page(error='Please donate to access this page.', code=403), 403
-    else:
-      return f(*args, **kwargs)
-  return decorated
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if constants.PROFILE_KEY not in session:
+            return redirect('/login')
+        if notallowed_id(session[constants.PROFILE_KEY]):
+            return (error_page(error='Please donate to access this page.', code=403), 403)
+        return f(*args, **kwargs)
+    return decorated              
 
 def allowed_file(filename):
   if config["ALLOW_ALL_FILES"]:
