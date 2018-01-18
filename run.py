@@ -32,7 +32,6 @@ from QuadFile.output import print_log, time_to_string
 from QuadFile import application
 
 app = Flask(__name__)
-app.debug = True
 app.secret_key = constants.SECRET_KEY
 
 oauth = OAuth(app)
@@ -85,16 +84,13 @@ def delete_old():
 def error_page(error, code):
   return render_template('error.html', page=config["SITE_DATA"], error=error, code=code)
 
-def allowed_id(id):  
-  return id in config["DONOR_ID_LIST"]
-
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         if constants.PROFILE_KEY not in session:
             return redirect('/login')
         return f(*args, **kwargs)
-    return decorated              
+    return decorated
 
 def allowed_file(filename):
   if config["ALLOW_ALL_FILES"]:
@@ -211,14 +207,8 @@ def callback():
         'user_id': userinfo['sub'],
         'name': userinfo['name']
     }
-    
-    #session[constants.PROFILE_KEY] = userinfo['sub'].split('|')[-1]
-    
-    #if allowed_id(session[constants.PROFILE_KEY]):
     return redirect('/custom')
-    #else:
-    #    return error_page(error="Please donate to access this page.", code=403), 403
-  
+
 @app.route('/logout')
 def logout():
     session.clear()
