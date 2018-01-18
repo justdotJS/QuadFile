@@ -91,7 +91,8 @@ def requires_auth(f):
       return redirect('/login')
     if notallowed_id(session[constants.PROFILE_KEY]):
       return (error_page(error='Please donate to access this page.', code=403), 403
-    return f(*args, **kwargs)
+    else:
+      return f(*args, **kwargs)
   return decorated
 
 def allowed_file(filename):
