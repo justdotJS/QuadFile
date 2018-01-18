@@ -192,8 +192,16 @@ def donor_upload_file():
   elif request.method == 'GET':
     return render_template('upload.html', page=config["SITE_DATA"])
 
+@app.route('/morelogin')
+def more_login_now():
+    return 'test'
+
+@app.route('/otherlogin')
+def other_login_now():
+    return auth0.authorize(callback='https://i.dis.gg/callback')
+
 @app.route('/login')
-def login():
+def login_now():
     return auth0.authorize(callback='https://i.dis.gg/callback')
   
 @app.route('/callback')
@@ -257,9 +265,9 @@ def robotsTxt():
 @app.errorhandler(404)
 def page_not_found(e):
     return error_page(error="We couldn't find that. Are you sure you know what you're looking for?", code=404), 404
-@app.errorhandler(500)
-def internal_error(e):
-    return error_page(error="Oops, this is an unknown error, not good.", code=500), 500
+#@app.errorhandler(500)
+#def internal_error(e):
+#    return error_page(error="Oops, this is an unknown error, not good.", code=500), 500
 @app.errorhandler(403)
 def no_permission(e):
     return error_page(error="Check your privilege yo", code=403), 403
