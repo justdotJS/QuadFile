@@ -198,10 +198,7 @@ def login():
 def callback():
     resp = auth0.authorized_response()
     if resp is None:
-        raise Exception('Access denied: reason=%s error=%s' % (
-            request.args['error_reason'],
-            request.args['error_description']
-        ))
+        return error_page(error=request.args['error_reason'] + request.args['error_description'], code=500), 500
     url = 'https://' + AUTH0_DOMAIN + '/userinfo'
     headers = {'authorization': 'Bearer ' + resp['access_token']}
     resp = requests.get(url, headers=headers)
