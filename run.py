@@ -178,10 +178,6 @@ def donor_upload_file():
   elif request.method == 'GET':
     return render_template('upload.html', page=config["SITE_DATA"])
 
-@app.route('/test')
-def tester():
-    return 'test'
-
 @app.route('/login')
 def login():
     return auth0.authorize(callback=AUTH0_CALLBACK_URL)
@@ -247,13 +243,13 @@ def robotsTxt():
 # Custom 404
 @app.errorhandler(404)
 def page_not_found(e):
-    return error_page(error="We couldn't find that. Are you sure you know what you're looking for?", code=404), 404
+    return error_page(error="We couldn't find that. Check your URL?", code=404), 404
 @app.errorhandler(500)
 def internal_error(e):
-    return error_page(error="Oops, this is an unknown error, not good.", code=500), 500
+    return error_page(error="Something went wrong with our server. Maybe try again?", code=500), 500
 @app.errorhandler(403)
 def no_permission(e):
-    return error_page(error="Check your privilege yo", code=403), 403
+    return error_page(error="Unauthorized.... get yourself a promotion man.", code=403), 403
 
 
 @app.route('/<filename>', methods=['GET'])
@@ -270,11 +266,11 @@ def get_file(filename):
 @app.route('/error/<int:error>')
 def nginx_error(error):
   if error == 413:
-    return error_page(error="O-o-onii-chan, noo it's too big ~~", code=413), 413
+    return error_page(error="The file you are uploading is too big.", code=413), 413
   elif error == 403: # Block IPs with your web server and return /error/403 for this page
-    return error_page(error="Sorry, the IP you're using has been blocked due to excessive abuse", code=403), 403
+    return error_page(error="Your IP has been blocked due to excessive abuse.", code=403), 403
   else:
-    return error_page(error="We literally have no idea what just happened", code="Unknown")
+    return error_page(error="Uhh we don't know what just happened... try again?", code="Unknown")
 
 
 if config["DELETE_FILES"]:
