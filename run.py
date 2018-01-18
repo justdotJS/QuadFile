@@ -102,14 +102,8 @@ def allowed_file(filename):
     else:
       return '.' in filename and filename.rsplit('.', 1)[1] in config["ALLOWED_EXTENSIONS"]   
 
-#def donor_allowed_file(filename):
-#  if config["DONOR_ALLOW_ALL_FILES"]:
-#    return True
-#  else:
-#    if config["DONOR_BLACKLIST"]:
-#      return '.' in filename and filename.rsplit('.', 1)[1] not in config["DONOR_BANNED_EXTENSIONS"]      
-#    else:
-#      return '.' in filename and filename.rsplit('.', 1)[1] in config["DONOR_ALLOWED_EXTENSIONS"]
+def allowed_id(id):  
+  return id in config["DONOR_ID_LIST"]
 
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
@@ -218,7 +212,10 @@ def callback():
     session[constants.PROFILE_KEY] = userinfo['sub'].split('|')[-1]
     
     return session[constants.PROFILE_KEY]
-    #return redirect('/custom')
+    if allowed_id(session[constants.PROFILE_KEY]):
+        return redirect('/custom')
+    else:
+        return error_page(error="Please donate to access this page.", code=403), 403
   
 @app.route('/logout')
 def logout():
