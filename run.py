@@ -196,7 +196,7 @@ def donor_upload_file():
 def login():
     return auth0.authorize(callback='https://i.dis.gg/callback')
   
-@APP.route('/callback')
+@app.route('/callback')
 def callback_handling():
     resp = auth0.authorized_response()
     if resp is None:
