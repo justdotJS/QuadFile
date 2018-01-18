@@ -214,7 +214,8 @@ def callback():
         'name': userinfo['name']
     }
     
-    return redirect('/custom')
+    return userinfo['name']
+    #return redirect('/custom')
   
 @app.route('/logout')
 def logout():
