@@ -67,22 +67,6 @@ def cleaner_thread():
 
   # Actual function
   delete_old()
-
-class AuthError(Exception):
-    def __init__(self, error, status_code):
-        self.error = error
-        self.status_code = status_code
-        
-@app.errorhandler(AuthError)
-def handle_auth_error(ex):
-    response = jsonify(ex.error)
-    response.status_code = ex.status_code
-    return response
-
-@app.errorhandler(Exception)
-def handle_auth_error(ex):
-    response = jsonify(message=ex.message)
-    return response
     
 def delete_old():
   print_log('Notice', 'Cleaner running')
@@ -211,25 +195,23 @@ def login():
     return auth0.authorize(callback=AUTH0_CALLBACK_URL)
   
 @app.route('/callback')
-def callback_handling():
+def callback():
     resp = auth0.authorized_response()
     if resp is None:
-        raise AuthError({'code': request.args['error'],
-                         'description': request.args['error_description']}, 401)
-
+        raise Exception('Access denied: reason=%s error=%s' % (
+            request.args['error_reason'],
+            request.args['error_description']
+        ))
     url = 'https://' + AUTH0_DOMAIN + '/userinfo'
     headers = {'authorization': 'Bearer ' + resp['access_token']}
     resp = requests.get(url, headers=headers)
     userinfo = resp.json()
-
     session[constants.JWT_PAYLOAD] = userinfo
-
     session[constants.PROFILE_KEY] = {
         'user_id': userinfo['sub'],
         'name': userinfo['name'],
         'picture': userinfo['picture']
     }
-
     return redirect('/custom')
   
 @app.route('/logout')
@@ -271,9 +253,9 @@ def robotsTxt():
 @app.errorhandler(404)
 def page_not_found(e):
     return error_page(error="We couldn't find that. Are you sure you know what you're looking for?", code=404), 404
-#@app.errorhandler(500)
-#def internal_error(e):
-#    return error_page(error="Oops, this is an unknown error, not good.", code=500), 500
+@app.errorhandler(500)
+def internal_error(e):
+    return error_page(error="Oops, this is an unknown error, not good.", code=500), 500
 @app.errorhandler(403)
 def no_permission(e):
     return error_page(error="Check your privilege yo", code=403), 403
