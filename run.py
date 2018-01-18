@@ -23,7 +23,7 @@ app = Flask(__name__)
 
 oauth = OAuth(app)
 auth0 = oauth.remote_app(
-    'auth0',
+    'github',
     consumer_key='zmwM9URqC2dOSdNmmu4wGVYemmx2JmHE',
     consumer_secret='DzpUSd9nLkcxN8wdC9wC0qytnW34DOG5sn-2MKhrR2vfBGOhOdQY-2o09f-5e_xt',
     request_token_params={
