@@ -8,6 +8,7 @@ from threading import Thread, Timer
 import logging
 import os
 import random
+import requests
 import json
 import time
 import short_url
