@@ -89,10 +89,11 @@ def requires_auth(f):
   def decorated(*args, **kwargs):
     if constants.PROFILE_KEY not in session:
       return redirect('/login')
-    elif allowed_id(session[constants.PROFILE_KEY]):
-      #return redirect('/custom')
     else:
-      return error_page(error="Please donate to access this page.", code=403), 403
+      if allowed_id(session[constants.PROFILE_KEY]):
+        # nothing, go on
+      else:
+        return error_page(error="Please donate to access this page.", code=403), 403
     return f(*args, **kwargs)
   return decorated
 
