@@ -192,6 +192,7 @@ def login():
   
 @app.route('/callback')
 def callback():
+    return self.request.GET.get('error')
     resp = auth0.authorized_response()
     
     if resp is None:
@@ -201,8 +202,6 @@ def callback():
     headers = {'authorization': 'Bearer ' + resp['access_token']}
     resp = requests.get(url, headers=headers)
     userinfo = resp.json()
-    
-    return userinfo
     
     session[constants.JWT_PAYLOAD] = userinfo
     
