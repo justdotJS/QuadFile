@@ -215,7 +215,7 @@ def callback():
         'name': userinfo['name']
     }
     
-    session[constants.PROFILE_KEY] = userinfo['sub']
+    session[constants.PROFILE_KEY] = userinfo['sub'].split('|')[-1]
     
     return session[constants.PROFILE_KEY]
     #return redirect('/custom')
