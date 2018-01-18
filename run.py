@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-from flask import Flask, request, redirect, url_for, send_from_directory, abort, render_template
+from flask import Flask, request, redirect, url_for, send_from_directory, abort, render_template, jsonify, session
+from six.moves.urllib.parse import urlencode
 from flask_oauthlib.client import OAuth
 from werkzeug import secure_filename
 from threading import Thread, Timer
@@ -23,7 +24,7 @@ app = Flask(__name__)
 
 oauth = OAuth(app)
 auth0 = oauth.remote_app(
-    'github',
+    'auth0',
     consumer_key='zmwM9URqC2dOSdNmmu4wGVYemmx2JmHE',
     consumer_secret='DzpUSd9nLkcxN8wdC9wC0qytnW34DOG5sn-2MKhrR2vfBGOhOdQY-2o09f-5e_xt',
     request_token_params={
@@ -56,7 +57,22 @@ def cleaner_thread():
   # Actual function
   delete_old()
 
+class AuthError(Exception):
+    def __init__(self, error, status_code):
+        self.error = error
+        self.status_code = status_code
+        
+@APP.errorhandler(AuthError)
+def handle_auth_error(ex):
+    response = jsonify(ex.error)
+    response.status_code = ex.status_code
+    return response
 
+@APP.errorhandler(Exception)
+def handle_auth_error(ex):
+    response = jsonify(message=ex.message)
+    return response
+    
 def delete_old():
   print_log('Notice', 'Cleaner running')
   targetTime = time.time() - config["TIME"]
@@ -69,7 +85,6 @@ def delete_old():
       print_log('Warning', 'Failed to delete old file "' + file["file"] + '"')
     db.delete_entry(file["file"])
 
-
 def error_page(error, code):
   return render_template('error.html', page=config["SITE_DATA"], error=error, code=code)
 
@@ -79,7 +94,6 @@ def requires_auth(f):
     if 'profile' not in session:
       return redirect('/login')
     return f(*args, **kwargs)
-    
   return decorated
 
 def allowed_file(filename):
@@ -139,6 +153,7 @@ def upload_file():
     return render_template('upload.html', page=config["SITE_DATA"])
 
 @app.route('/custom', methods=['GET', 'POST'])
+@requires_auth
 def donor_upload_file():
   if request.method == 'POST':
     print_log('Web', 'New premium file received')
@@ -148,7 +163,7 @@ def donor_upload_file():
     file = request.files['file']
 
     # Only continue if a file that's allowed gets submitted.
-    if file and allowed_file(file.filename) and requires_auth():
+    if file and allowed_file(file.filename):
       filename = secure_filename(file.filename)
       while os.path.exists(os.path.join(config["UPLOAD_FOLDER"], filename)):
         filename = str(randint(1000,8999)) + '-' + secure_filename(filename)
@@ -180,30 +195,26 @@ def donor_upload_file():
 def login():
     return auth0.authorize(callback='https://i.dis.gg/callback')
   
-@app.route('/callback')
+@APP.route('/callback')
 def callback_handling():
-    # Handles response from token endpoint
     resp = auth0.authorized_response()
     if resp is None:
-        raise Exception('Access Denied: reason=%s error=%s' % (
-            request.args['error_reason'],
-            request.args['error_description']
-        ))
-    
+        raise AuthError({'code': request.args['error'],
+                         'description': request.args['error_description']}, 401)
+
     url = 'https://' + AUTH0_DOMAIN + '/userinfo'
     headers = {'authorization': 'Bearer ' + resp['access_token']}
     resp = requests.get(url, headers=headers)
     userinfo = resp.json()
-    
-    # Store the tue user information in flask session.
+
     session[constants.JWT_PAYLOAD] = userinfo
-    
+
     session[constants.PROFILE_KEY] = {
         'user_id': userinfo['sub'],
         'name': userinfo['name'],
         'picture': userinfo['picture']
     }
-    
+
     return redirect('/custom')
   
 @app.route('/logout')
