@@ -1,2 +1,6 @@
 flask==0.10.1
 short_url
+python-dotenv
+requests
+flask-oauthlib
+six
