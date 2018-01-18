@@ -86,17 +86,12 @@ def error_page(error, code):
 
 def allowed_id(id):  
   return id in config["DONOR_ID_LIST"]
-              
-def notallowed_id(id):  
-  return id not in config["DONOR_ID_LIST"]
 
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         if constants.PROFILE_KEY not in session:
             return redirect('/login')
-        if notallowed_id(session[constants.PROFILE_KEY]):
-            return (error_page(error='Please donate to access this page.', code=403), 403)
         return f(*args, **kwargs)
     return decorated              
 
@@ -201,6 +196,8 @@ def callback():
     if resp is None:
         return error_page(error=request.args['error_reason'] + request.args['error_description'], code=500), 500
     
+    return resp
+    
     url = 'https://' + AUTH0_DOMAIN + '/userinfo'
     headers = {'authorization': 'Bearer ' + resp['access_token']}
     resp = requests.get(url, headers=headers)
@@ -215,7 +212,6 @@ def callback():
     
     session[constants.PROFILE_KEY] = userinfo['sub'].split('|')[-1]
     
-    #return session[constants.PROFILE_KEY]
     if allowed_id(session[constants.PROFILE_KEY]):
         return redirect('/custom')
     else:
