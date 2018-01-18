@@ -85,6 +85,12 @@ def delete_old():
 def error_page(error, code):
   return render_template('error.html', page=config["SITE_DATA"], error=error, code=code)
 
+def allowed_id(id):  
+  return id in config["DONOR_ID_LIST"]
+              
+def notallowed_id(id):  
+  return id not in config["DONOR_ID_LIST"]
+
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -103,12 +109,6 @@ def allowed_file(filename):
       return '.' in filename and filename.rsplit('.', 1)[1] not in config["BANNED_EXTENSIONS"]      
     else:
       return '.' in filename and filename.rsplit('.', 1)[1] in config["ALLOWED_EXTENSIONS"]   
-
-def allowed_id(id):  
-  return id in config["DONOR_ID_LIST"]
-              
-def allowed_id(id):  
-  return id not in config["DONOR_ID_LIST"]
 
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
