@@ -34,6 +34,7 @@ app = Flask(__name__)
 app.secret_key = constants.SECRET_KEY
 
 oauth = OAuth(app)
+app.debug = True
 auth0 = oauth.remote_app(
     'auth0',
     consumer_key=AUTH0_CLIENT_ID,
