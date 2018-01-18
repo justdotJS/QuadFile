@@ -197,18 +197,22 @@ def login():
 @app.route('/callback')
 def callback():
     resp = auth0.authorized_response()
+    
     if resp is None:
         return error_page(error=request.args['error_reason'] + request.args['error_description'], code=500), 500
+    
     url = 'https://' + AUTH0_DOMAIN + '/userinfo'
     headers = {'authorization': 'Bearer ' + resp['access_token']}
     resp = requests.get(url, headers=headers)
     userinfo = resp.json()
+    
     session[constants.JWT_PAYLOAD] = userinfo
+    
     session[constants.PROFILE_KEY] = {
         'user_id': userinfo['sub'],
-        'name': userinfo['name'],
-        'picture': userinfo['picture']
+        'name': userinfo['name']
     }
+    
     return redirect('/custom')
   
 @app.route('/logout')
