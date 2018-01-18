@@ -211,7 +211,7 @@ def callback():
     
     session[constants.PROFILE_KEY] = userinfo['sub'].split('|')[-1]
     
-    return session[constants.PROFILE_KEY]
+    #return session[constants.PROFILE_KEY]
     if allowed_id(session[constants.PROFILE_KEY]):
         return redirect('/custom')
     else:
