@@ -219,7 +219,7 @@ def callback():
 @app.route('/logout')
 def logout():
     session.clear()
-    params = {'returnTo': url_for('home', _external=True), 'client_id': AUTH0_CLIENT_ID}
+    params = {'returnTo': 'https://i.dis.gg', 'client_id': AUTH0_CLIENT_ID}
     return redirect(auth0.base_url + '/v2/logout?' + urlencode(params))
 
 # Def all the static pages
