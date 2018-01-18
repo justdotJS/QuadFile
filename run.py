@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from flask import Flask, request, redirect, url_for, send_from_directory, abort, render_template, jsonify, session
 from six.moves.urllib.parse import urlencode
-from dotenv import load_dotenv, find_dotenv
 from flask_oauthlib.client import OAuth
 from werkzeug import secure_filename
 from functools import wraps
@@ -15,15 +14,11 @@ import short_url
 from random import randint
 import constants
 
-ENV_FILE = find_dotenv()
-if ENV_FILE:
-    load_dotenv(ENV_FILE)
-
-AUTH0_CALLBACK_URL = env.get(constants.AUTH0_CALLBACK_URL)
-AUTH0_CLIENT_ID = env.get(constants.AUTH0_CLIENT_ID)
-AUTH0_CLIENT_SECRET = env.get(constants.AUTH0_CLIENT_SECRET)
-AUTH0_DOMAIN = env.get(constants.AUTH0_DOMAIN)
-AUTH0_AUDIENCE = env.get(constants.AUTH0_AUDIENCE)
+AUTH0_CALLBACK_URL = constants.AUTH0_CALLBACK_URL
+AUTH0_CLIENT_ID = constants.AUTH0_CLIENT_ID
+AUTH0_CLIENT_SECRET = constants.AUTH0_CLIENT_SECRET
+AUTH0_DOMAIN = constants.AUTH0_DOMAIN
+AUTH0_AUDIENCE = constants.AUTH0_AUDIENCE
 if AUTH0_AUDIENCE is '':
     AUTH0_AUDIENCE = 'https://' + AUTH0_DOMAIN + '/userinfo'
     
