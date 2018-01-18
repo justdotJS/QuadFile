@@ -12,7 +12,20 @@ import json
 import time
 import short_url
 from random import randint
+import constants
 
+ENV_FILE = find_dotenv()
+if ENV_FILE:
+    load_dotenv(ENV_FILE)
+
+AUTH0_CALLBACK_URL = env.get(constants.AUTH0_CALLBACK_URL)
+AUTH0_CLIENT_ID = env.get(constants.AUTH0_CLIENT_ID)
+AUTH0_CLIENT_SECRET = env.get(constants.AUTH0_CLIENT_SECRET)
+AUTH0_DOMAIN = env.get(constants.AUTH0_DOMAIN)
+AUTH0_AUDIENCE = env.get(constants.AUTH0_AUDIENCE)
+if AUTH0_AUDIENCE is '':
+    AUTH0_AUDIENCE = 'https://' + AUTH0_DOMAIN + '/userinfo'
+    
 # Import our configuration
 from conf import config
 
@@ -22,17 +35,18 @@ from QuadFile.output import print_log, time_to_string
 from QuadFile import application
 
 app = Flask(__name__)
+app.secret_key = constants.SECRET_KEY
 
 oauth = OAuth(app)
 auth0 = oauth.remote_app(
     'auth0',
-    consumer_key='zmwM9URqC2dOSdNmmu4wGVYemmx2JmHE',
-    consumer_secret='DzpUSd9nLkcxN8wdC9wC0qytnW34DOG5sn-2MKhrR2vfBGOhOdQY-2o09f-5e_xt',
+    consumer_key=AUTH0_CLIENT_ID,
+    consumer_secret=AUTH0_CLIENT_SECRET,
     request_token_params={
         'scope': 'openid profile',
-        'audience': 'https://' + 'disgg.auth0.com' + '/userinfo'
+        'audience': AUTH0_AUDIENCE
     },
-    base_url='https://%s' % 'disgg.auth0.com',
+    base_url='https://%s' % AUTH0_DOMAIN,
     access_token_method='POST',
     access_token_url='/oauth/token',
     authorize_url='/authorize',
@@ -92,7 +106,7 @@ def error_page(error, code):
 def requires_auth(f):
   @wraps(f)
   def decorated(*args, **kwargs):
-    if 'profile' not in session:
+    if constants.PROFILE_KEY not in session:
       return redirect('/login')
     return f(*args, **kwargs)
   return decorated
@@ -192,17 +206,13 @@ def donor_upload_file():
   elif request.method == 'GET':
     return render_template('upload.html', page=config["SITE_DATA"])
 
-@app.route('/morelogin')
-def more_login_now():
+@app.route('/test')
+def tester():
     return 'test'
 
-@app.route('/otherlogin')
-def other_login_now():
-    return auth0.authorize(callback='https://i.dis.gg/callback')
-
 @app.route('/login')
-def login_now():
-    return auth0.authorize(callback='https://i.dis.gg/callback')
+def login():
+    return auth0.authorize(callback=AUTH0_CALLBACK_URL)
   
 @app.route('/callback')
 def callback_handling():
@@ -229,7 +239,7 @@ def callback_handling():
 @app.route('/logout')
 def logout():
     session.clear()
-    params = {'returnTo': url_for('home', _external=True), 'client_id': 'zmwM9URqC2dOSdNmmu4wGVYemmx2JmHE'}
+    params = {'returnTo': url_for('home', _external=True), 'client_id': AUTH0_CLIENT_ID}
     return redirect(auth0.base_url + '/v2/logout?' + urlencode(params))
 
 # Def all the static pages
