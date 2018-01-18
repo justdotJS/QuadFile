@@ -197,12 +197,12 @@ def callback():
     if resp is None:
         return error_page(error=request.args['error_reason'] + request.args['error_description'], code=500), 500
     
-    return resp
-    
     url = 'https://' + AUTH0_DOMAIN + '/userinfo'
     headers = {'authorization': 'Bearer ' + resp['access_token']}
     resp = requests.get(url, headers=headers)
     userinfo = resp.json()
+    
+    return userinfo
     
     session[constants.JWT_PAYLOAD] = userinfo
     
