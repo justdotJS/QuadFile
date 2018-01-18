@@ -32,7 +32,6 @@ from QuadFile.output import print_log, time_to_string
 from QuadFile import application
 
 app = Flask(__name__)
-app.debug = True
 app.secret_key = constants.SECRET_KEY
 
 oauth = OAuth(app)
