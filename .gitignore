@@ -1,4 +1,5 @@
 .env
+constants.py
 # JetBrains files
 .idea/*
 # Configuration
@@ -60,3 +61,5 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
+
+*.zip
